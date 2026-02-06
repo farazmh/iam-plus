@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  refreshTokens RefreshToken[]
+
+  userRoles UserRole[]
+
+  oauthAuthorizationCodes OAuthAuthorizationCode[]
+
+  oauthAccessTokens OAuthAccessToken[]
+
+  oauthRefreshTokens OAuthRefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String
+  expiresAt DateTime
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  endpoint  String
+  ip        String
+  createdAt DateTime @default(now())
+}
+
+model Role {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  description String?
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  action      String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+  
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String @id @default(uuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+model OAuthClient {
+  id            String        @id @default(uuid())
+  name          String
+  clientId      String        @unique
+  clientSecret  String
+  redirectUris  String[]      // array of redirect URIs
+  scopes        OAuthScope[]
+  authCodes     OAuthAuthorizationCode[]
+  accessTokens  OAuthAccessToken[]
+
+  oauthRefreshTokens OAuthRefreshToken[]
+}
+
+model OAuthScope {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  clients  OAuthClient[]
+}
+
+model OAuthAuthorizationCode {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  clientId      String
+  userId        String
+  redirectUri   String
+  expiresAt     DateTime
+  codeChallenge String?  // PKCE
+  codeMethod    String?  // plain / S256
+
+  user   User         @relation(fields: [userId], references: [id])
+  client OAuthClient  @relation(fields: [clientId], references: [id])
+}
+
+model OAuthAccessToken {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  userId      String
+  clientId    String
+  scope       String?
+  expiresAt   DateTime
+
+  user   User        @relation(fields: [userId], references: [id])
+  client OAuthClient @relation(fields: [clientId], references: [id])
+}
+
+model OAuthRefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  clientId  String
+  expiresAt DateTime
+
+  user   User        @relation(fields: [userId], references: [id])
+  client OAuthClient @relation(fields: [clientId], references: [id])
+}

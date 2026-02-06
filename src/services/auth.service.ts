@@ -1,41 +1,44 @@
-import { users, User } from "../models/user.model";
+import { prisma } from "../db/prisma";
 import bcrypt from "bcryptjs";
 import { v4 as uuid } from "uuid";
 
 export class AuthService {
-	static async register(email: string, password: string): Promise<User> {
-		const existing = users.find(u => u.email === email);
-		if (existing) {
-			throw new Error("User already exists");
-		}
+  static async register(email: string, password: string) {
+    const existing = await prisma.user.findUnique({
+      where: { email },
+    });
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+    if (existing) {
+      throw new Error("User already exists");
+    }
 
-		const newUser: User = {
-			id: uuid(),
-			email,
-			password: hashedPassword,
-			createdAt: new Date(),
-		};
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-		users.push(newUser);
+    const user = await prisma.user.create({
+      data: {
+        id: uuid(),
+        email,
+        password: hashedPassword,
+      },
+    });
 
-		return newUser;
-	}
+    return user;
+  }
 
-	static async login(email: string, password: string) {
-		const user = users.find(u => u.email === email);
+  static async login(email: string, password: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-		if (!user) {
-			throw new Error("Invalid credentials");
-		}
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
 
-		const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error("Invalid credentials");
+    }
 
-		if (!isMatch) {
-			throw new Error("Invalid credentials");
-		}
-
-		return user;
-	}
+    return user;
+  }
 }
