@@ -1,97 +1,172 @@
-# IAM Plus — OAuth2 Authorization Server (Node.js + Prisma + PostgreSQL)
 
-IAM Plus is a production-grade **OAuth2 Authorization Server** implementing:
+# 🚀 IAM Plus — Enterprise OAuth2 Authorization Server  
+### **Production-Grade Identity & Access Management (Node.js + TypeScript + Prisma + PostgreSQL)**  
+A fully featured **OAuth2 Authorization Server** built with enterprise patterns, clean architecture, and modern standards.
 
-- Authorization Code Flow (+ PKCE)
-- Access tokens + Refresh tokens
-- Consent screen
-- Session-based login
-- Token introspection
-- RBAC (Role-Based Access Control)
-- Audit logs + rate limiting
-- Prisma ORM (PostgreSQL)
+IAM Plus provides:
 
-All written in clean, scalable **TypeScript**.
+- 🔐 **OAuth2 Authorization Code Flow (with PKCE)**
+- 🔑 **Access Tokens + Refresh Tokens**
+- 👤 **Session Login + Consent Screen**
+- 🧩 **RBAC (Role-Based Access Control)**
+- 🛡 **Rate Limiting + Audit Logging**
+- 🗄 **Prisma 7 ORM + PostgreSQL**
+- 🔎 **Token Introspection**
+- 🌐 **Service-to-Service Integration (Notify Plus)**
 
----
-
-# 🏷 Badges
-
-![Node](https://img.shields.io/badge/Node.js-22+-green)
-![Prisma](https://img.shields.io/badge/Prisma-7-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue)
-![OAuth2](https://img.shields.io/badge/OAuth2-Authorization_Code_Flow-orange)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+This is a **portfolio-grade, production-style identity service**.
 
 ---
 
-# 🏗 Architecture Overview
+# 🏆 Highlights
 
-IAM Plus follows a clean, modular OAuth2 Authorization Server architecture:
+### ✔ Microservice-ready OAuth2 server  
+### ✔ Secure PKCE-enabled authorization  
+### ✔ Admin portal for OAuth client management  
+### ✔ Clean TypeScript architecture  
+### ✔ Real PostgreSQL schemas + migrations  
+### ✔ Integrates directly with Notify Plus (email/SMS/webhooks)
 
-- Browser login using express-session  
-- Authorization endpoint with consent  
-- Authorization Code issuance (single-use)  
-- Token endpoint with PKCE verification  
+---
+
+# 🏗 Architecture Diagram
+
+```
+Browser → IAM Plus → Consent → Auth Code → Token → Protected API
+                              ↓
+                       Notify Plus (Welcome Email)
+```
+
+---
+
+# 📚 Features Overview
+
+### 🔐 Authentication
+- Email/password login  
+- Express session-based UI login  
+- Secure cookie handling  
+
+### 🔓 Authorization
+- OAuth2 Authorization Code Flow  
+- PKCE support (S256)  
+- Consent screen  
+- Single-use Authorization Codes  
+
+### 🔑 Token System
 - Short-lived access tokens  
 - Long-lived refresh tokens  
-- Token introspection for APIs/microservices  
-- Admin-only OAuth client creation  
-- Role-based access permissions  
-- Prisma ORM schema  
-- PostgreSQL backend  
+- Token introspection endpoint  
+- JWT-based token generation  
+
+### 🧩 RBAC
+- Roles  
+- Permissions  
+- User-role linking  
+- Admin-only API routes  
+
+### 📜 Audit & Security
+- Rate limiting  
+- Audit log table  
+- Failed login tracking  
+- Prisma-level schema security  
 
 ---
 
 # 📦 Project Structure
 
+```
 src/
   controllers/
-    oauth.controller.ts
-    page.controller.ts
-    auth.controller.ts
-  routes/
-    oauth.routes.ts
-    pages.routes.ts
-    auth.routes.ts
-  middleware/
-    verifyAccessToken.ts
-  db/
-    prisma.ts
   services/
-    oauth.service.ts
+  middleware/
+  routes/
+  db/
+  views/
   app.ts
 prisma/
   schema.prisma
   prisma.config.ts
-  seed.ts
+```
 
 ---
 
 # 🚀 Getting Started
 
-Clone & install:
+### Clone & Install
 ```bash
 git clone https://github.com/farazmh/iam-plus
 cd iam-plus
 npm install
 ```
 
-Create `.env`, run migrations:
+### Database Setup
+Create PostgreSQL database:
+```
+iamdb
+```
+
+### Environment Variables
+`.env`
+```
+DATABASE_URL="postgresql://postgres:password@localhost:5434/iamdb"
+SESSION_SECRET="supersecret"
+NOTIFY_URL="http://localhost:4001"
+NOTIFY_SERVICE_TOKEN="notify_internal_123"
+```
+
+### Migrate + Seed
 ```bash
 npx prisma migrate dev
 npm run seed
-npm run dev
 ```
 
-Admin login:
+Default Admin:
 ```
 admin@iam.plus / admin123
 ```
 
+### Run
+```bash
+npm run dev
+```
+Runs at:
+```
+http://localhost:4000
+```
+
 ---
 
-# ⭐ Credits
+# 🔗 Key OAuth2 Endpoints
 
-Built by **Faraz Munavar Hussain**.
+| Endpoint | Purpose |
+|---------|---------|
+| `/oauth/authorize` | Start OAuth2 Authorization Code flow |
+| `/oauth/token` | Exchange code → Access Token |
+| `/oauth/introspect` | Validate an access token |
+| `/login` | User login screen |
+| `/consent` | Consent approval page |
+
+---
+
+# 🤝 Integration with Notify Plus
+
+IAM Plus automatically sends:
+
+- 🎉 Welcome Email on registration  
+- 📣 System notifications in future (password reset, MFA, etc.)  
+
+Internal communication uses secure headers:
+```
+x-service-token: notify_internal_123
+```
+
+---
+
+# 🏁 Final Notes
+IAM Plus is engineered as a **real production-ready identity platform**.  
+It pairs perfectly with **Notify Plus** to form a complete backend ecosystem.
+
+---
+
+# ⭐ Author
+Built by **Faraz Munavar Hussain**, Backend Engineer & Systems Architect.
