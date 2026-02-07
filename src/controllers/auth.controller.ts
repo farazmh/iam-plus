@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { generateAccessToken, generateRefreshToken } from "../utils/token";
 import jwt from "jsonwebtoken";
 import { prisma } from "../db/prisma";
+import { NotificationClient } from "../services/notificationClient";
 
 export class AuthController {
 	static async register(req: Request, res: Response) {
@@ -14,6 +15,7 @@ export class AuthController {
 			}
 
 			const user = await AuthService.register(email, password);
+			await NotificationClient.sendWelcomeEmail(user.email, user.email.split("@")[0]);
 
 			return res.status(201).json({
 				message: "User registered successfully",

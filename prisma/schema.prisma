@@ -6,7 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -29,7 +28,7 @@ model RefreshToken {
   token     String
   expiresAt DateTime
   userId    String
-  user      User      @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -43,8 +42,8 @@ model AuditLog {
 }
 
 model Role {
-  id          String        @id @default(uuid())
-  name        String        @unique
+  id          String           @id @default(uuid())
+  name        String           @unique
   description String?
   users       UserRole[]
   permissions RolePermission[]
@@ -64,7 +63,7 @@ model UserRole {
 
   user User @relation(fields: [userId], references: [id])
   role Role @relation(fields: [roleId], references: [id])
-  
+
   @@unique([userId, roleId])
 }
 
@@ -80,22 +79,22 @@ model RolePermission {
 }
 
 model OAuthClient {
-  id            String        @id @default(uuid())
-  name          String
-  clientId      String        @unique
-  clientSecret  String
-  redirectUris  String[]      // array of redirect URIs
-  scopes        OAuthScope[]
-  authCodes     OAuthAuthorizationCode[]
-  accessTokens  OAuthAccessToken[]
+  id           String                   @id @default(uuid())
+  name         String
+  clientId     String                   @unique
+  clientSecret String
+  redirectUris String[] // array of redirect URIs
+  scopes       OAuthScope[]
+  authCodes    OAuthAuthorizationCode[]
+  accessTokens OAuthAccessToken[]
 
   oauthRefreshTokens OAuthRefreshToken[]
 }
 
 model OAuthScope {
-  id       String   @id @default(uuid())
-  name     String   @unique
-  clients  OAuthClient[]
+  id      String        @id @default(uuid())
+  name    String        @unique
+  clients OAuthClient[]
 }
 
 model OAuthAuthorizationCode {
@@ -105,20 +104,20 @@ model OAuthAuthorizationCode {
   userId        String
   redirectUri   String
   expiresAt     DateTime
-  codeChallenge String?  // PKCE
-  codeMethod    String?  // plain / S256
+  codeChallenge String? // PKCE
+  codeMethod    String? // plain / S256
 
-  user   User         @relation(fields: [userId], references: [id])
-  client OAuthClient  @relation(fields: [clientId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
+  client OAuthClient @relation(fields: [clientId], references: [id])
 }
 
 model OAuthAccessToken {
-  id          String   @id @default(uuid())
-  token       String   @unique
-  userId      String
-  clientId    String
-  scope       String?
-  expiresAt   DateTime
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  clientId  String
+  scope     String?
+  expiresAt DateTime
 
   user   User        @relation(fields: [userId], references: [id])
   client OAuthClient @relation(fields: [clientId], references: [id])
